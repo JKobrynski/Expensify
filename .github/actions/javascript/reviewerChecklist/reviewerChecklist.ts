@@ -1,15 +1,15 @@
-const core = require('@actions/core');
-const github = require('@actions/github');
-const https = require('https');
-const GitHubUtils = require('../../../libs/GithubUtils');
+import * as core from '@actions/core';
+import * as github from '@actions/github';
+import https from 'https';
+import * as  GitHubUtils from '../../../libs/GithubUtils';
 
 const pathToReviewerChecklist = 'https://raw.githubusercontent.com/Expensify/App/main/contributingGuides/REVIEWER_CHECKLIST.md';
 const reviewerChecklistContains = '# Reviewer Checklist';
-const issue = github.context.payload.issue ? github.context.payload.issue.number : github.context.payload.pull_request.number;
-const combinedComments = [];
+const issue = github.context.payload.issue ? github.context.payload.issue.number : github.context.payload.pull_request?.number;
+const combinedComments: unknown[] = [];
 
 /**
- * @returns {Promise}
+ * @returns
  */
 function getNumberOfItemsFromReviewerChecklist() {
     console.log('Getting the number of items in the reviewer checklist...');
@@ -34,15 +34,21 @@ function getNumberOfItemsFromReviewerChecklist() {
 }
 
 /**
- * @param {Number} numberOfChecklistItems
+ * @param numberOfChecklistItems
  */
-function checkIssueForCompletedChecklist(numberOfChecklistItems) {
+function checkIssueForCompletedChecklist(numberOfChecklistItems: number) {
+    // @ts-expect-error -- TODO: remove this once GithubUtils is typed
     GitHubUtils.getAllReviewComments(issue)
+        // @ts-expect-error -- TODO: remove this once GithubUtils is typed
         .then((reviewComments) => {
             console.log(`Pulled ${reviewComments.length} review comments, now adding them to the list...`);
             combinedComments.push(...reviewComments);
         })
+        // @ts-expect-error -- TODO: remove this once GithubUtils is typed
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
         .then(() => GitHubUtils.getAllComments(issue))
+        // @ts-expect-error -- TODO: remove this once GithubUtils is typed
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
         .then((comments) => {
             console.log(`Pulled ${comments.length} comments, now adding them to the list...`);
             combinedComments.push(...comments);
